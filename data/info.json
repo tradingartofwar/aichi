@@ -1,0 +1,35 @@
+{
+  "greetings": {
+    "hello": "Hi.",
+    "thank_you": "Thank you for calling. Are you calling about a massage?"
+  },
+  "ai_response": {
+    "ai_identity": "Yes, I take calls when a massage therapist is currently with a customer. I can answer questions, check our appointment schedule, set appointments, and let them know you are coming.",
+    "ai_followup": "Have you talked with AI before?"
+  },
+  "common_questions": {
+    "pricing": {
+      "60_minutes": "$60",
+      "90_minutes": "$90",
+      "30_minutes": "$40",
+      "unlisted_duration_response": "We offer massages in 30, 60, and 90-minute sessions. I can suggest the closest option if you'd like!"
+    },
+    "hours": "We are open 7 days a week from 9:15 AM - 10 PM.",
+    "walkins": "Walk-ins are okay, but appointments are sometimes better if we happen to be busy.",
+    "location": {
+      "address": "3995 Bethel Rd",
+      "offer_text": "I can text you the address if you like."
+    }
+  },
+  "scheduling": {
+    "appointment_offer": "Would you like to come in for a massage?",
+    "check_availability": "Give me just a moment to check. We have one opening right now, or would you like to schedule one for later?",
+    "special_request": "When asked this, I have been instructed to let you know that we are a massage-only business. We will work very hard to remove your pain, stress, and tightness, leaving you feeling great!"
+  },
+  "fallback_responses": [
+    "I'm not sure I understood that. Could you please rephrase your question?",
+    "I didn’t quite catch that. Can you ask again?",
+    "Sorry, I missed what you said. Could you repeat it?",
+    "I’m having trouble hearing you. Could you try again?"
+  ]
+}

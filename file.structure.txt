@@ -1,0 +1,18 @@
+/mnt/c/aichi/backend
+├── audio/                   (Generated MP3s)
+├── data/
+│   └── info.json            (Business FAQ)
+├── mod.calls/
+│   ├── ai.router.js         (AI router logic)
+│   └── gpt4omini.js         (AI model logic)
+├── nodes/
+│   ├── conv.node.js         (Conversation logic with DB)
+│   ├── schedule.node.js
+│   └── tts.node.js          (TTS via Eleven Labs)
+├── routers/
+│   ├── conv.router.js
+│   ├── schedule.router.js
+│   └── senthein.router.js
+├── customers.sqlite         (Your DB)
+├── .env                     (API Keys & NGROK_URL)
+└── index.js                 (Main Express server)

@@ -1,0 +1,15 @@
+.env
+node_modules/
+audio/
+*.log
+customer.sqlite
+venv/
+token.json
+credentials.json
+*.mp3
+*.wav
+*.raw
+*.mulaw
+whisper/
+__pycache__/
+*.pyc

@@ -1,0 +1,99 @@
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import sentheinRouter from './routers/senthein.router.js';
+import convRouter from './routers/conv.router.js';
+import scheduleRouter from './routers/schedule.router.js';
+import { generateSpeech } from './nodes/tts.node.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Static route for audio files
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use('/audio', express.static(path.join(__dirname, 'audio')));
+
+// Routers
+app.use('/api/senthein', sentheinRouter);
+app.use('/api/conversation', convRouter);
+app.use('/api/schedule', scheduleRouter);
+
+// Google OAuth callback route (unchanged)
+app.get('/api/schedule/oauth2callback', (req, res) => {
+  res.send('Google OAuth callback received. If you authorized, events can now be scheduled.');
+});
+
+// Corrected webhook clearly optimized for Twilio
+app.post('/api/calls/webhook', async (req, res) => {
+  console.log('[Webhook] Incoming Twilio webhook:', req.body);
+
+  const greetingText = "Thank you for calling. All our massage therapists are currently busy. I'm an advanced AI created to help so our customers aren't disturbed. Would you like to schedule a massage or ask any questions?";
+
+  try {
+    const greetingAudioFile = 'greeting.mp3';
+    await generateSpeech(greetingText, greetingAudioFile);
+    const greetingAudioUrl = `${process.env.NGROK_URL}/audio/${greetingAudioFile}`;
+
+    // Ensured no whitespace before XML declaration clearly
+    const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?><Response><Gather input="speech" action="${process.env.NGROK_URL}/api/calls/handle-response" method="POST"><Play>${greetingAudioUrl}</Play></Gather><Say>Sorry, I didn't catch that. Goodbye.</Say></Response>`;
+
+    console.log('[Webhook] TwiML Sent to Twilio:', twimlResponse);
+    res.type('text/xml').send(twimlResponse);
+  } catch (error) {
+    console.error('[Webhook Error]:', error);
+    res.status(500).send('Internal server error generating greeting.');
+  }
+});
+
+// Clearly optimized handle-response endpoint
+app.post('/api/calls/handle-response', async (req, res) => {
+  console.log('[Handle Response] Received user response:', req.body);
+
+  const userMessage = req.body.SpeechResult || 'No input received';
+  console.log('[Handle Response] User message extracted:', userMessage);
+
+  const fakeRequest = { body: { message: userMessage } };
+  const fakeResponse = {
+    json: async (result) => {
+      const responseText = result.data.response || "Sorry, I couldn't process your request.";
+      const audioFileName = 'response.mp3';
+
+      try {
+        await generateSpeech(responseText, audioFileName);
+        const audioUrl = `${process.env.NGROK_URL}/audio/${audioFileName}`;
+
+        const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?><Response><Play>${audioUrl}</Play></Response>`;
+
+        console.log('[Handle Response] TwiML Sent:', twimlResponse);
+        res.type('text/xml').send(twimlResponse);
+      } catch (audioError) {
+        console.error('[Handle Response Audio Error]:', audioError);
+        res.status(500).send('Internal error generating response audio.');
+      }
+    },
+    status: (code) => ({ json: (obj) => res.status(code).json(obj) })
+  };
+
+  sentheinRouter.handle(fakeRequest, fakeResponse, (err) => {
+    if (err) {
+      console.error('[Handle Response Router Error]:', err);
+      res.status(500).send('Internal server routing error.');
+    }
+  });
+});
+
+// Start Express server (unchanged)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
+process.on('SIGTERM', () => {
+  process.exit(0);
+});
